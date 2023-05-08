@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa'
 import './principal.css'
@@ -7,6 +7,8 @@ import { toast } from 'react-toastify'
 
 import api from '../../services/api'
 
+import { Link } from 'react-router-dom'
+
 export default function Principal() {
 
     const [newRepo, setNewRepo] = useState('')
@@ -14,27 +16,49 @@ export default function Principal() {
 
     const [buttonLoading, setButtonLoading] = useState(false)
 
+    //Buscar
+    useEffect(() => {
+        const repoStorage = localStorage.getItem('repository');
+
+        if (repoStorage) {
+            setRepositorios(JSON.parse(repoStorage));
+        }
+
+    }, []);
+
+
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
 
         async function submit() {
             setButtonLoading(true)
             try {
+
                 //pegando os dados que o usuário digitou e consumindo api
                 const response = await api.get(`repos/${newRepo}`)
+
+                const hasRepo = repositorios.find(repo => repo.name === newRepo);
+
+                if (hasRepo) {
+                    toast.error("Este repositório já foi cadastrado!")
+                    throw new Error('Repositório já cadastrado!');
+                }
 
                 //pegando os dados devolvidos no get
                 const data = {
                     name: response.data.full_name,
                 }
                 toast.success("Repositório adicionado com sucesso");
-                //adicionando novo repositório à lista
+                // adicionando novo repositório à lista
                 setRepositorios([...repositorios, data])
-                //limpando o input
+                // salvando a lista atualizada no localStorage
+                localStorage.setItem('repository', JSON.stringify([...repositorios, data]));
+                // limpando o input
                 setNewRepo('')
-            }catch(error){
-                toast.error("Não foi possível localizar o repositório");
-            }finally{
+
+            } catch (error) {
+                console.log(error)
+            } finally {
                 setButtonLoading(false)
             }
 
@@ -49,6 +73,7 @@ export default function Principal() {
         const find = repositorios.filter(r => r.name !== repo);
         //agora a lista de repositorios será find, que conterá todos os repositorios antigos menos o que foi passado por parametro
         setRepositorios(find);
+        localStorage.setItem('repository', JSON.stringify([find]))
     }, [repositorios]);
 
 
@@ -63,7 +88,7 @@ export default function Principal() {
             <form className='form' onSubmit={handleSubmit}>
                 <input
                     type='text'
-                    placeholder='Adicionar repositório'
+                    placeholder='nomeusuario/nomerepositorio'
                     value={newRepo}
                     onChange={(e) => setNewRepo(e.target.value)}
                 />
@@ -77,13 +102,13 @@ export default function Principal() {
                     <li key={repo.name}>
                         <span>
                             <button type='button' className='deleteButton' onClick={() => handleDelete(repo.name)}>
-                                <FaTrash size={14}/>
+                                <FaTrash size={14} />
                             </button>
                             <b>Nome do repositório:</b> {repo.name}
                         </span>
-                        <a href=''>
-                            <FaBars size={20} color='#0D2636'/>
-                        </a>
+                        <Link href=''>
+                            <FaBars size={20} color='#0D2636' />
+                        </Link>
                     </li>
                 ))}
             </ul>
