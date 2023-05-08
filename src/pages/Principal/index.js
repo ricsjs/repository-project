@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 
-import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa'
+import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa'
 import './principal.css'
 
 import { toast } from 'react-toastify'
@@ -26,10 +26,8 @@ export default function Principal() {
                 //pegando os dados devolvidos no get
                 const data = {
                     name: response.data.full_name,
-                    created: response.data.created_at,
-                    url: response.data.git_url
                 }
-                toast.success("Repositório adicionado com sucesso")
+                toast.success("Repositório adicionado com sucesso");
                 //adicionando novo repositório à lista
                 setRepositorios([...repositorios, data])
                 //limpando o input
@@ -45,6 +43,13 @@ export default function Principal() {
         submit();
 
     }, [newRepo, repositorios]);
+
+    const handleDelete = useCallback((repo) => {
+        //procurando todos os repositorios com nome diferente do nome do repositorio que foi passado e armazenando no find
+        const find = repositorios.filter(r => r.name !== repo);
+        //agora a lista de repositorios será find, que conterá todos os repositorios antigos menos o que foi passado por parametro
+        setRepositorios(find);
+    }, [repositorios]);
 
 
     return (
@@ -64,8 +69,24 @@ export default function Principal() {
                 />
                 {buttonLoading === true ? (
                     <button className='submitButton' type='submit'><FaSpinner color='#FFF' size={14} /></button>
-                ) : <button className='submitButton' type='submit'><FaPlus color='#FFF' size={14} /></button>}
+                ) : <button className='submitButton' type='submit'><FaPlus className='spinner' color='#FFF' size={14} /></button>}
             </form>
+
+            <ul className='lista'>
+                {repositorios?.map(repo => (
+                    <li key={repo.name}>
+                        <span>
+                            <button type='button' className='deleteButton' onClick={() => handleDelete(repo.name)}>
+                                <FaTrash size={14}/>
+                            </button>
+                            <b>Nome do repositório:</b> {repo.name}
+                        </span>
+                        <a href=''>
+                            <FaBars size={20} color='#0D2636'/>
+                        </a>
+                    </li>
+                ))}
+            </ul>
 
         </div>
     )
