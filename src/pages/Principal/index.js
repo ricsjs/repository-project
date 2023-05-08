@@ -3,6 +3,8 @@ import { useState, useCallback } from 'react'
 import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa'
 import './principal.css'
 
+import { toast } from 'react-toastify'
+
 import api from '../../services/api'
 
 export default function Principal() {
@@ -27,13 +29,13 @@ export default function Principal() {
                     created: response.data.created_at,
                     url: response.data.git_url
                 }
-
+                toast.success("Repositório adicionado com sucesso")
                 //adicionando novo repositório à lista
                 setRepositorios([...repositorios, data])
                 //limpando o input
                 setNewRepo('')
             }catch(error){
-                console.log(error)
+                toast.error("Não foi possível localizar o repositório");
             }finally{
                 setButtonLoading(false)
             }
