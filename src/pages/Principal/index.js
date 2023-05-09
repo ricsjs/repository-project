@@ -57,7 +57,8 @@ export default function Principal() {
                 setNewRepo('')
 
             } catch (error) {
-                console.log(error)
+                toast.error("Repositório não encontrado");
+                setNewRepo('')
             } finally {
                 setButtonLoading(false)
             }
@@ -73,7 +74,7 @@ export default function Principal() {
         const find = repositorios.filter(r => r.name !== repo);
         //agora a lista de repositorios será find, que conterá todos os repositorios antigos menos o que foi passado por parametro
         setRepositorios(find);
-        localStorage.setItem('repository', JSON.stringify([find]))
+        localStorage.setItem('repository', JSON.stringify(find));
     }, [repositorios]);
 
 
@@ -96,6 +97,12 @@ export default function Principal() {
                     <button className='submitButton' type='submit'><FaSpinner color='#FFF' size={14} /></button>
                 ) : <button className='submitButton' type='submit'><FaPlus className='spinner' color='#FFF' size={14} /></button>}
             </form>
+
+            {repositorios.length === 0 && (
+                <div className='span'>
+                    <span>Você ainda não salvou nenhum repositório.</span>
+                </div>
+            )}
 
             <ul className='lista'>
                 {repositorios?.map(repo => (
