@@ -1,7 +1,8 @@
-export default function Main(){
+export default function Repositorio({ match }){
     return(
         <div>
-            <h1>repositorio</h1>
+            <h1>teste</h1>
+            
         </div>
     )
 }

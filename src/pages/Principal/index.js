@@ -9,17 +9,25 @@ import api from '../../services/api'
 
 import { Link } from 'react-router-dom'
 
+import Modal from '../../components/Modal'
+
 export default function Principal() {
 
+    //useState do input
     const [newRepo, setNewRepo] = useState('')
+    //array com os repositórios
     const [repositorios, setRepositorios] = useState([])
-
+    //state do botão de carregamento
     const [buttonLoading, setButtonLoading] = useState(false)
+
+    const [showPostModal, setShowPostModal] = useState(false)
+    const [detail, setDetail] = useState()
 
     //Buscar
     useEffect(() => {
+        //pegando os repositorios salvos no localStorage
         const repoStorage = localStorage.getItem('repository');
-
+        //se tiver algum item adiciona ao array
         if (repoStorage) {
             setRepositorios(JSON.parse(repoStorage));
         }
@@ -36,9 +44,9 @@ export default function Principal() {
 
                 //pegando os dados que o usuário digitou e consumindo api
                 const response = await api.get(`repos/${newRepo}`)
-
+                //adicionando repositorio ao array
                 const hasRepo = repositorios.find(repo => repo.name === newRepo);
-
+                //fazendo validação
                 if (hasRepo) {
                     toast.error("Este repositório já foi cadastrado!")
                     throw new Error('Repositório já cadastrado!');
@@ -48,6 +56,7 @@ export default function Principal() {
                 const data = {
                     name: response.data.full_name,
                 }
+                
                 toast.success("Repositório adicionado com sucesso");
                 // adicionando novo repositório à lista
                 setRepositorios([...repositorios, data])
@@ -77,6 +86,12 @@ export default function Principal() {
         localStorage.setItem('repository', JSON.stringify(find));
     }, [repositorios]);
 
+
+    function toggleModal(repo) {
+        setShowPostModal(!showPostModal)
+        setDetail(repo)
+    }
+    
 
     return (
         <div className="container">
@@ -113,12 +128,19 @@ export default function Principal() {
                             </button>
                             <b>Nome do repositório:</b> {repo.name}
                         </span>
-                        <Link href=''>
+                        <Link onClick={() => toggleModal(repo)}>
                             <FaBars size={20} color='#0D2636' />
                         </Link>
                     </li>
                 ))}
             </ul>
+
+             {showPostModal && (
+                <Modal
+                    conteudo={detail}
+                    close={() => setShowPostModal(!setShowPostModal)}
+                />
+            )} 
 
         </div>
     )
