@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom'
-import Repositorio from './pages/Repositorio'
 import Principal from './pages/Principal'
 
 export default function RoutesApp(){
@@ -7,7 +6,6 @@ export default function RoutesApp(){
         <Routes>
 
             <Route path='/' element={ <Principal /> } />
-            <Route path='/repositorio/:repositorio' element={ <Repositorio /> }/>
         </Routes>
     )
 }
