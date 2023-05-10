@@ -1,6 +1,7 @@
 import './modal.css'
 import { FiX } from 'react-icons/fi'
 
+
 export default function Modal({ conteudo, close }) {
     return (
         <div className='modal'>
@@ -12,7 +13,10 @@ export default function Modal({ conteudo, close }) {
                 <main>
                     <h2>Detalhes do repositório</h2>
                     <div className='row'>
-                        <span>Nome do repositório <i>{conteudo.name}</i></span>
+                        <p><strong>Nome do repositório:</strong> {conteudo.name}</p>
+                        <p><strong>Criador:</strong> @{conteudo.login}</p>
+                        <p><strong>Descrição:</strong> {conteudo.descricao}</p>
+                        <p><strong>Link:</strong> {conteudo.link}</p>
                     </div>
                 </main>
             </div>

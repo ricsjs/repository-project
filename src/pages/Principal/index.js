@@ -37,26 +37,31 @@ export default function Principal() {
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
-
+    
         async function submit() {
             setButtonLoading(true)
             try {
-
+    
                 //pegando os dados que o usuário digitou e consumindo api
                 const response = await api.get(`repos/${newRepo}`)
+                
                 //adicionando repositorio ao array
                 const hasRepo = repositorios.find(repo => repo.name === newRepo);
                 //fazendo validação
                 if (hasRepo) {
-                    toast.error("Este repositório já foi cadastrado!")
-                    throw new Error('Repositório já cadastrado!');
+                    toast.error("Repositório já cadastrado!")
+                    throw new Error();
                 }
-
+    
                 //pegando os dados devolvidos no get
                 const data = {
                     name: response.data.full_name,
+                    login: response.data.owner.login,
+                    link: response.data.owner.html_url,
+                    descricao: response.data.description
                 }
-                
+    
+    
                 toast.success("Repositório adicionado com sucesso");
                 // adicionando novo repositório à lista
                 setRepositorios([...repositorios, data])
@@ -64,19 +69,19 @@ export default function Principal() {
                 localStorage.setItem('repository', JSON.stringify([...repositorios, data]));
                 // limpando o input
                 setNewRepo('')
-
+    
             } catch (error) {
-                toast.error("Repositório não encontrado");
                 setNewRepo('')
             } finally {
                 setButtonLoading(false)
             }
-
+    
         }
-
+    
         submit();
-
+    
     }, [newRepo, repositorios]);
+    
 
     const handleDelete = useCallback((repo) => {
         //procurando todos os repositorios com nome diferente do nome do repositorio que foi passado e armazenando no find
